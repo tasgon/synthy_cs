@@ -15,7 +15,7 @@ namespace synthy_cs
         public static bool[] PressedKeys { get; private set; } = new bool[88];
         public static void Init()
         {
-            if (Devices.Count == 0) throw new Exception("You must have a MIDI input device plugged in!");
+            if (Devices.Count == 0) return; 
             Devices[SelectedIndex].EventReceived += InputEvent;
             Devices[SelectedIndex].StartEventsListening();
             SelectedDevice = Devices[SelectedIndex];
@@ -23,6 +23,7 @@ namespace synthy_cs
 
         public static void Rotate()
         {
+            if (Devices.Count == 0) return;
             Devices[SelectedIndex].StopEventsListening();
             Devices[SelectedIndex].EventReceived -= InputEvent;
             SelectedIndex = (SelectedIndex + 1) % Devices.Count;
@@ -43,6 +44,7 @@ namespace synthy_cs
                     _ => PressedKeys[idx]
                 };
             }
+            Console.WriteLine(PressedKeys);
         }
     }
 }

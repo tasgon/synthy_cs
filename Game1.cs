@@ -39,16 +39,16 @@ namespace synthy_cs
             vstack.AddChild(new Label
             {
                 Id = "hello",
-                Text = "Welcome to synthy."
+                Text = "This is synthy."
             });
             var kbdBtn = new TextButton
             {
-                Text = $"Keyboard ({Piano.Devices.Count}): {Piano.SelectedDevice.Name}"
+                Text = $"Keyboard ({Piano.Devices.Count}): {Piano.SelectedDevice?.Name}"
             };
             kbdBtn.Click += (s, a) =>
             {
                 Piano.Rotate();
-                kbdBtn.Text = $"Keyboard: {Piano.SelectedDevice.Name}";
+                kbdBtn.Text = $"Keyboard: {Piano.SelectedDevice?.Name}";
             };
             vstack.AddChild(kbdBtn);
             vstack.AddChild(new Label
@@ -88,7 +88,8 @@ namespace synthy_cs
             // TODO: Add your drawing code here
             _desktop.Render();
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_drawnPiano.BasePiano, Vector2.Zero, Color.White);
+            //_spriteBatch.Draw(_drawnPiano.BasePiano, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
+            _drawnPiano.Draw(this, _spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);
