@@ -1,18 +1,18 @@
 ﻿using System;
+using System.IO;
 using Melanchall.DryWetMidi.Devices;
 
 namespace synthy_cs
 {
     public static class Program
     {
+
+        public static readonly string SynthyRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "synthy");
+
         [STAThread]
         static void Main()
         {
-            Console.WriteLine("printing devices");
-            foreach (var dev in InputDevice.GetAll())
-            {
-                Console.WriteLine(dev.Name);
-            }
+            Piano.Init();
             using (var game = new Game1())
                 game.Run();
         }
