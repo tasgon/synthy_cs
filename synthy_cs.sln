@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30517.126
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "synthy_cs", "synthy_cs.csproj", "{A3621353-BE27-43E0-ABCD-78AFC47AC7BB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3621353-BE27-43E0-ABCD-78AFC47AC7BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3621353-BE27-43E0-ABCD-78AFC47AC7BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3621353-BE27-43E0-ABCD-78AFC47AC7BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3621353-BE27-43E0-ABCD-78AFC47AC7BB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E74EB919-4FEC-4814-904A-4355E9A9BC07}
+	EndGlobalSection
+EndGlobal
