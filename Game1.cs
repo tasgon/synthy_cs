@@ -20,6 +20,11 @@ namespace synthy_cs
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += (sender, args) =>
+            {
+                _drawnPiano.Height = GraphicsDevice.Viewport.Height / 5;
+            };
         }
 
         protected override void Initialize()

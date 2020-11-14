@@ -65,9 +65,6 @@ namespace synthy_cs
         {
             float scaleX = game.GraphicsDevice.Viewport.Width / (KeyPositions.Last().Item2.X + Textures.NoteWhite.Width);
             float scaleY = (float)Height / Textures.NoteWhite.Height;
-            /*var baseRect = new Rectangle(0, game.GraphicsDevice.Viewport.Height - Height,
-                game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
-            sb.Draw(WhiteKeys, baseRect, Color.White);*/
             foreach (int i in WhiteIndices)
             {
                 var x = (int)(KeyPositions[i].Item2.X * scaleX);
@@ -78,7 +75,6 @@ namespace synthy_cs
                     (int) (tex.Width * scaleX), (int) (tex.Height * scaleY));
                 sb.Draw(tex, rect, Color.White);
             }
-            //sb.Draw(BlackKeys, baseRect, Color.White);
             foreach (int i in BlackIndices)
             {
                 var x = (int)(KeyPositions[i].Item2.X * scaleX);
