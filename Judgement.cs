@@ -49,14 +49,14 @@ namespace synthy_cs
             }
 
             var ev = queue.Peek();
-            var window = Math.Abs(ev.Item2 - _song.CurrentTime);
-            Console.WriteLine(window);
-            if (window < Settings.HitPerfectMicros) HitPerfect++;
-            else if (window < Settings.HitOkayMicros) HitOkay++;
-            else if (window < Settings.HitBadMicros) HitBad++;
-            else if (ev.Item1 == MidiEventType.NoteOn)
+            if (ev.Item1 == e.EventType)
             {
-                HitMiss++;
+                var window = Math.Abs(ev.Item2 - _song.CurrentTime);
+                Console.WriteLine(window);
+                if (window < Settings.HitPerfectMicros) HitPerfect++;
+                else if (window < Settings.HitOkayMicros) HitOkay++;
+                else if (window < Settings.HitBadMicros) HitBad++;
+                else if (ev.Item1 == MidiEventType.NoteOn) HitMiss++;
             }
 
             Console.WriteLine($"PF: {HitPerfect}; OK: {HitOkay}; BD: {HitBad}; MS: {HitMiss}");
@@ -68,19 +68,19 @@ namespace synthy_cs
             {
                 if (queue.Count == 0) continue;
                 var item = queue.Peek();
-                if (item.Item2 < _song.CurrentTime + Settings.HitBadMicros)
+                if (item.Item2 + Settings.HitBadMicros >= _song.CurrentTime) continue;
+                Console.WriteLine($"{item.Item2}, {_song.CurrentTime + Settings.HitBadMicros}, " +
+                                  $"{Math.Abs(item.Item2 - (_song.CurrentTime + Settings.HitBadMicros))}");
+                if (item.Item1 == MidiEventType.NoteOn)
                 {
-                    if (item.Item1 == MidiEventType.NoteOn)
-                    {
-                        HitMiss += 2;
-                        queue.Dequeue();
-                        queue.Dequeue();
-                    }
-                    else
-                    {
-                        HitBad += 1;
-                        queue.Dequeue();
-                    }
+                    HitMiss += 2;
+                    queue.Dequeue();
+                    queue.Dequeue();
+                }
+                else
+                {
+                    HitBad += 1;
+                    queue.Dequeue();
                 }
             }
         }
