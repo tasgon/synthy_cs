@@ -7,7 +7,7 @@ using Melanchall.DryWetMidi.Core;
 
 namespace synthy_cs
 {
-    class Piano
+    public class Piano
     {
         public static readonly List<InputDevice> Devices = InputDevice.GetAll().ToList();
         public static InputDevice SelectedDevice { get; private set; } = null;
@@ -44,6 +44,7 @@ namespace synthy_cs
                     MidiEventType.NoteOff => false,
                     _ => PressedKeys[idx]
                 };
+                CurrentSong?.SongJudgement?.RecordNoteEvent(ev);
             }
             Console.WriteLine(PressedKeys);
         }

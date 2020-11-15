@@ -2,6 +2,9 @@
 {
     public class Settings
     {
-        public static int TimeWindowMillis = 1000;
+        public static int TimeWindowMillis = 500;
+        public static int HitPerfectMicros = 50 * 1000;
+        public static int HitOkayMicros = 100 * 1000;
+        public static int HitBadMicros = 150 * 1000;
     }
 }

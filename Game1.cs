@@ -12,6 +12,7 @@ namespace synthy_cs
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private SpriteFont _font;
         private Desktop _desktop;
         public DrawnPiano OnScreenPiano;
         private Song _currentSong = null;
@@ -38,6 +39,7 @@ namespace synthy_cs
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _font = Content.Load<SpriteFont>("MainFont");
 
             // TODO: use this.Content to load your game content 
             MyraEnvironment.Game = this;
@@ -101,6 +103,12 @@ namespace synthy_cs
             _spriteBatch.Begin();
             _currentSong?.Draw(this, _spriteBatch);
             OnScreenPiano.Draw(this, _spriteBatch);
+            if (_currentSong != null)
+            {
+                Console.WriteLine("relskjd");
+                var pos = new Vector2(GraphicsDevice.Viewport.Width - 100, 0);
+                _spriteBatch.DrawString(_font, $"{(_currentSong.SongJudgement.Accuracy*100):F2}%", pos, Color.White);
+            }
             _spriteBatch.End();
             
             _desktop.Render();

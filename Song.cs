@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace synthy_cs
 {
-    class Song
+    public class Song
     {
         public readonly MidiFile File;
         public List<Note> AllNotes { get; private set; }
@@ -19,6 +19,7 @@ namespace synthy_cs
         public long CurrentTime = 0;
         public DateTime StartTime { get; private set; }
         public readonly TempoMap SongTempoMap;
+        public Judgement SongJudgement = null;
 
         public Song(string path, Game1 game)
         {
@@ -33,6 +34,7 @@ namespace synthy_cs
             CurrentTime = -Settings.TimeWindowMillis * 1000;
             AllNotesQueue = new Queue<Note>(AllNotes);
             OnScreenNotes.Clear();
+            SongJudgement = new Judgement(this);
             Piano.CurrentSong = this;
         }
 
