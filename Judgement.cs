@@ -2,9 +2,16 @@
 using System.Collections.Generic;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace synthy_cs
 {
+    public struct HitMarker
+    {
+        public int Error;
+        public long Time;
+    }
     public class Judgement
     {
         public int HitPerfect { get; private set; } = 0;
@@ -13,15 +20,17 @@ namespace synthy_cs
         public int HitMiss { get; private set; } = 0;
         private Song _song;
         public Queue<Tuple<MidiEventType, long>>[] KeyEvents = new Queue<Tuple<MidiEventType, long>>[128];
+        private bool[] PreviousNotHit = new bool[128];
+        public Queue<HitMarker> HitMarkers = new Queue<HitMarker>();
 
         public double Accuracy
         {
             get
             {
-                var denom = (HitPerfect + HitOkay + HitBad + HitMiss);
-                if (denom == 0) return 0d;
+                var denominator = (HitPerfect + HitOkay + HitBad + HitMiss);
+                if (denominator == 0) return 0d;
                 return (double) (3 * HitPerfect + 2 * HitOkay + 1 * HitBad)
-                       / (double) denom;
+                       / (double) denominator;
             }
         }
 
@@ -48,40 +57,67 @@ namespace synthy_cs
                 return;
             }
 
-            var ev = queue.Peek();
-            if (ev.Item1 == e.EventType)
+            var (eventType, eventTime) = queue.Peek();
+            if (eventType == e.EventType)
             {
-                var window = Math.Abs(ev.Item2 - _song.CurrentTime);
-                Console.WriteLine(window);
-                if (window < Settings.HitPerfectMicros) HitPerfect++;
-                else if (window < Settings.HitOkayMicros) HitOkay++;
-                else if (window < Settings.HitBadMicros) HitBad++;
-                else if (ev.Item1 == MidiEventType.NoteOn) HitMiss++;
+                var error = _song.CurrentTime - eventTime;
+                // Ignore way early events
+                if (error < -HitBad * 2) return;
+                var window = Math.Abs(error);
+                if (window < Settings.HitBadMicros)
+                {
+                    var marker = new HitMarker { Error = (int) error, Time = _song.CurrentTime };
+                    HitMarkers.Enqueue(marker);
+                    if (window < Settings.HitPerfectMicros) HitPerfect++;
+                    else if (window < Settings.HitOkayMicros) HitOkay++;
+                    else HitBad++;
+                }
+                else HitMiss++;
             }
-
-            Console.WriteLine($"PF: {HitPerfect}; OK: {HitOkay}; BD: {HitBad}; MS: {HitMiss}");
         }
 
         public void Update()
         {
-            foreach (var queue in KeyEvents)
+            //foreach (var queue in KeyEvents)
+            for (int i = 0; i < 128; i++)
             {
+                var queue = KeyEvents[i];
                 if (queue.Count == 0) continue;
-                var item = queue.Peek();
-                if (item.Item2 + Settings.HitBadMicros >= _song.CurrentTime) continue;
-                Console.WriteLine($"{item.Item2}, {_song.CurrentTime + Settings.HitBadMicros}, " +
-                                  $"{Math.Abs(item.Item2 - (_song.CurrentTime + Settings.HitBadMicros))}");
-                if (item.Item1 == MidiEventType.NoteOn)
+                var (eventType, eventTime) = queue.Peek();
+                if (eventTime + Settings.HitBadMicros >= _song.CurrentTime) continue;
+                if (eventType == MidiEventType.NoteOn)
                 {
-                    HitMiss += 2;
+                    HitMiss++;
                     queue.Dequeue();
-                    queue.Dequeue();
+                    PreviousNotHit[i] = true;
+                    //queue.Dequeue();
                 }
                 else
                 {
-                    HitBad += 1;
+                    if (PreviousNotHit[i]) HitMiss++;
+                    else HitBad++;
                     queue.Dequeue();
                 }
+            }
+
+            if (HitMarkers.Count == 0) return;
+            // Remove old hitmarkers
+            while (HitMarkers.Peek().Time < _song.CurrentTime - 1e6) HitMarkers.Dequeue();
+        }
+
+        public void Draw(Game1 game, SpriteBatch sb)
+        {
+            var startX = (game.GraphicsDevice.Viewport.Width - Settings.HitMarkerBaseWidth) / 2;
+            var pixelsPerTime = Settings.HitMarkerBaseWidth / (Settings.HitBadMicros * 2);
+            var baseRect = new Rectangle(startX, game.GraphicsDevice.Viewport.Height / 2, 
+                Settings.HitMarkerBaseWidth, 2);
+            sb.Draw(Textures.HitMarkerBase, baseRect, Color.White);
+            var markerY = (game.GraphicsDevice.Viewport.Height - Textures.HitMarker.Height) / 2; 
+            var hitMarkerRect = new Rectangle(0, markerY, 3, 20);
+            foreach (var hitMarker in HitMarkers)
+            {
+                hitMarkerRect.X = startX + (hitMarker.Error - Settings.HitBadMicros) * pixelsPerTime;
+                sb.Draw(Textures.HitMarker, hitMarkerRect, Color.White);
             }
         }
     }

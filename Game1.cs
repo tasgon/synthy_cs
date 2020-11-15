@@ -12,7 +12,7 @@ namespace synthy_cs
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-        private SpriteFont _font;
+        private SpriteFont _font, _fontSmall;
         private Desktop _desktop;
         public DrawnPiano OnScreenPiano;
         private Song _currentSong = null;
@@ -40,6 +40,7 @@ namespace synthy_cs
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _font = Content.Load<SpriteFont>("MainFont");
+            _fontSmall = Content.Load<SpriteFont>("FontSmall");
 
             // TODO: use this.Content to load your game content 
             MyraEnvironment.Game = this;
@@ -102,11 +103,20 @@ namespace synthy_cs
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _currentSong?.Draw(this, _spriteBatch);
+            _currentSong?.SongJudgement?.Draw(this, _spriteBatch);
             OnScreenPiano.Draw(this, _spriteBatch);
             if (_currentSong != null)
             {
                 var pos = new Vector2(GraphicsDevice.Viewport.Width - 100, 0);
                 _spriteBatch.DrawString(_font, $"{(_currentSong.SongJudgement.Accuracy*100):F2}%", pos, Color.White);
+                pos.Y += 20;
+                _spriteBatch.DrawString(_fontSmall, $"PF: {_currentSong.SongJudgement.HitPerfect}", pos, Color.DarkGreen);
+                pos.Y += 16;
+                _spriteBatch.DrawString(_fontSmall, $"OK: {_currentSong.SongJudgement.HitOkay}", pos, Color.Purple);
+                pos.Y += 16;
+                _spriteBatch.DrawString(_fontSmall, $"BD: {_currentSong.SongJudgement.HitBad}", pos, Color.DeepPink);
+                pos.Y += 16;
+                _spriteBatch.DrawString(_fontSmall, $"MS: {_currentSong.SongJudgement.HitMiss}", pos, Color.Black);
             }
             _spriteBatch.End();
             
