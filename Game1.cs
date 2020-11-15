@@ -61,7 +61,7 @@ namespace synthy_cs
                 Id = "Songs",
                 Text = "Songs:"
             });
-            foreach (var file in Directory.GetFiles(Program.SynthyRoot))
+            foreach (var file in Directory.GetFiles(Program.SynthyRoot, "*.mid*"))
             {
                 var btn = new TextButton
                 {
