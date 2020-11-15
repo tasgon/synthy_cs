@@ -41,18 +41,15 @@ namespace synthy_cs
         public void Update(GameTime gameTime)
         {
             CurrentTime += (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 1000);
-            if (AllNotesQueue.Count > 0)
+            while (AllNotesQueue.Count > 0 && AllNotesQueue.Peek().TimeAs<MetricTimeSpan>(SongTempoMap).TotalMicroseconds
+                   < (CurrentTime + Settings.TimeWindowMillis * 1000))
             {
-                while (AllNotesQueue.Peek().TimeAs<MetricTimeSpan>(SongTempoMap).TotalMicroseconds
-                       < (CurrentTime + Settings.TimeWindowMillis * 1000))
-                {
-                    var note = AllNotesQueue.Dequeue();
-                    OnScreenNotes.Enqueue(note);
-                }
+                var note = AllNotesQueue.Dequeue();
+                OnScreenNotes.Enqueue(note);
             }
             
-            if (OnScreenNotes.Count == 0) return;
-            while (OnScreenNotes.Peek().EndTimeAs<MetricTimeSpan>(SongTempoMap).TotalMicroseconds < CurrentTime)
+            while (OnScreenNotes.Count > 0 && 
+                   OnScreenNotes.Peek().EndTimeAs<MetricTimeSpan>(SongTempoMap).TotalMicroseconds < CurrentTime)
             {
                 var note = OnScreenNotes.Dequeue();
             }

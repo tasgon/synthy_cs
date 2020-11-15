@@ -65,6 +65,24 @@ namespace synthy_cs
                 Id = "Songs",
                 Text = "Songs:"
             });
+            var hstack = new HorizontalStackPanel();
+            var timeWindowLabel = new Label {Id = "twL", Text = $"{Settings.TimeWindowMillis} ms"};
+            var plusBtn = new TextButton {Text = " + "};
+            plusBtn.Click += (sender, args) =>
+            {
+                Settings.TimeWindowMillis += 50;
+                timeWindowLabel.Text = $"{Settings.TimeWindowMillis} ms";
+            };
+            var minusBtn = new TextButton {Text = " - "};
+            minusBtn.Click += (sender, args) =>
+            {
+                if ((Settings.TimeWindowMillis - 50) != 0) Settings.TimeWindowMillis -= 50;
+                timeWindowLabel.Text = $"{Settings.TimeWindowMillis} ms";
+            };
+            hstack.AddChild(minusBtn);
+            hstack.AddChild(timeWindowLabel);
+            hstack.AddChild(plusBtn);
+            vstack.AddChild(hstack);
             foreach (var file in Directory.GetFiles(Program.SynthyRoot, "*.mid*"))
             {
                 var btn = new TextButton
