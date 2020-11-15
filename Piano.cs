@@ -13,6 +13,7 @@ namespace synthy_cs
         public static InputDevice SelectedDevice { get; private set; } = null;
         private static int SelectedIndex = 0;
         public static bool[] PressedKeys { get; private set; } = new bool[88];
+        public static Song CurrentSong = null;
         public static void Init()
         {
             if (Devices.Count == 0) return; 

@@ -2,6 +2,6 @@
 {
     public class Settings
     {
-        public static float TimeWindow = 1.0
+        public static int TimeWindowMillis = 1000;
     }
 }

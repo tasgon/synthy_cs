@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Melanchall.DryWetMidi.Interaction;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace synthy_cs
 {
@@ -12,8 +13,8 @@ namespace synthy_cs
     {
         public readonly MidiFile File;
         public List<Note> AllNotes { get; private set; } = new List<Note>();
-        public Queue<Note> AllNotesQueue { get; private set; };
-        public Queue<Note> ActiveNotes { get; private set; } = new Queue<Note>();
+        public Queue<Note> AllNotesQueue { get; private set; }
+        public Queue<Note> OnScreenNotes { get; private set; } = new Queue<Note>();
         private long CurrentTime = 0;
         public Song(string path, Game1 game)
         {
@@ -27,17 +28,36 @@ namespace synthy_cs
             CurrentTime += (int)(gameTime.ElapsedGameTime.TotalMilliseconds * 1000);
             if (AllNotesQueue.Count > 0)
             {
-                while (AllNotesQueue.Peek().TimeAs<MetricTimeSpan>(File.GetTempoMap()).TotalMicroseconds < CurrentTime)
+                while (AllNotesQueue.Peek().TimeAs<MetricTimeSpan>(File.GetTempoMap()).TotalMicroseconds
+                       < (CurrentTime + Settings.TimeWindowMillis * 1000))
                 {
-                    ActiveNotes.Enqueue(AllNotesQueue.Dequeue());
+                    OnScreenNotes.Enqueue(AllNotesQueue.Dequeue());
                 }
             }
             
-            if (ActiveNotes.Count == 0) return;
-            while (ActiveNotes.Peek().EndTimeAs<MetricTimeSpan>(File.GetTempoMap()).TotalMicroseconds < CurrentTime)
+            if (OnScreenNotes.Count == 0) return;
+            while (OnScreenNotes.Peek().EndTimeAs<MetricTimeSpan>(File.GetTempoMap()).TotalMicroseconds < CurrentTime)
             {
-                ActiveNotes.Dequeue();
+                OnScreenNotes.Dequeue();
             }
+        }
+
+        public void Draw(Game1 game, SpriteBatch sb)
+        {
+            
+        }
+    }
+
+    static class NoteExt
+    {
+        public static int VerticalPos(this Note note)
+        {
+            return 0;
+        }
+
+        public static int Height(this Note note)
+        {
+            
         }
     }
 }
