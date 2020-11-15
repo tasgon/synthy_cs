@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Melanchall.DryWetMidi.Core;
 using Melanchall.DryWetMidi.Interaction;
 using Microsoft.Xna.Framework;
@@ -27,7 +28,7 @@ namespace synthy_cs
         {
             get
             {
-                var denominator = (HitPerfect + HitOkay + HitBad + HitMiss);
+                var denominator = 3 * (HitPerfect + HitOkay + HitBad + HitMiss);
                 if (denominator == 0) return 0d;
                 return (double) (3 * HitPerfect + 2 * HitOkay + 1 * HitBad)
                        / (double) denominator;
@@ -66,13 +67,14 @@ namespace synthy_cs
                 var window = Math.Abs(error);
                 if (window < Settings.HitBadMicros)
                 {
-                    var marker = new HitMarker { Error = (int) error, Time = _song.CurrentTime };
-                    HitMarkers.Enqueue(marker);
+                    var marker = new HitMarker {Error = (int) error, Time = _song.CurrentTime};
+                    lock (HitMarkers) HitMarkers.Enqueue(marker);
                     if (window < Settings.HitPerfectMicros) HitPerfect++;
                     else if (window < Settings.HitOkayMicros) HitOkay++;
                     else HitBad++;
                 }
                 else HitMiss++;
+                queue.Dequeue();
             }
         }
 
@@ -99,24 +101,24 @@ namespace synthy_cs
                     queue.Dequeue();
                 }
             }
-
-            if (HitMarkers.Count == 0) return;
             // Remove old hitmarkers
-            while (HitMarkers.Peek().Time < _song.CurrentTime - 1e6) HitMarkers.Dequeue();
+            lock (HitMarkers) while (HitMarkers.Count > 0 &&
+                   HitMarkers.Peek().Time < _song.CurrentTime - 1e6) HitMarkers.Dequeue();
         }
 
         public void Draw(Game1 game, SpriteBatch sb)
         {
             var startX = (game.GraphicsDevice.Viewport.Width - Settings.HitMarkerBaseWidth) / 2;
-            var pixelsPerTime = Settings.HitMarkerBaseWidth / (Settings.HitBadMicros * 2);
+            var pixelsPerTime = (float)Settings.HitMarkerBaseWidth / (Settings.HitBadMicros * 2);
             var baseRect = new Rectangle(startX, game.GraphicsDevice.Viewport.Height / 2, 
                 Settings.HitMarkerBaseWidth, 2);
             sb.Draw(Textures.HitMarkerBase, baseRect, Color.White);
-            var markerY = (game.GraphicsDevice.Viewport.Height - Textures.HitMarker.Height) / 2; 
-            var hitMarkerRect = new Rectangle(0, markerY, 3, 20);
-            foreach (var hitMarker in HitMarkers)
+            var markerY = (game.GraphicsDevice.Viewport.Height - Settings.HitMarkerHeight) / 2; 
+            var hitMarkerRect = new Rectangle(0, markerY, 3, Settings.HitMarkerHeight);
+            lock (HitMarkers) foreach (var hitMarker in HitMarkers)
             {
-                hitMarkerRect.X = startX + (hitMarker.Error - Settings.HitBadMicros) * pixelsPerTime;
+                hitMarkerRect.X = game.GraphicsDevice.Viewport.Width / 2 + (int)(hitMarker.Error * pixelsPerTime);
+                Console.WriteLine($"{hitMarkerRect}; {hitMarker.Error}");
                 sb.Draw(Textures.HitMarker, hitMarkerRect, Color.White);
             }
         }

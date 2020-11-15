@@ -32,6 +32,7 @@ namespace synthy_cs
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            Window.Title = "synthy.";
 
             base.Initialize();
         }

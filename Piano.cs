@@ -46,7 +46,6 @@ namespace synthy_cs
                 };
                 CurrentSong?.SongJudgement?.RecordNoteEvent(ev);
             }
-            Console.WriteLine(PressedKeys);
         }
     }
 }
