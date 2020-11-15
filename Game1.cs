@@ -13,7 +13,8 @@ namespace synthy_cs
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Desktop _desktop;
-        private DrawnPiano _drawnPiano;
+        public DrawnPiano OnScreenPiano;
+        private Song _currentSong = null;
 
         public Game1()
         {
@@ -23,7 +24,7 @@ namespace synthy_cs
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += (sender, args) =>
             {
-                _drawnPiano.Height = GraphicsDevice.Viewport.Height / 5;
+                OnScreenPiano.Height = GraphicsDevice.Viewport.Height / 5;
             };
         }
 
@@ -67,13 +68,18 @@ namespace synthy_cs
                 {
                     Text = file
                 };
+                btn.Click += (sender, args) =>
+                {
+                    this._currentSong = new Song(btn.Text, this);
+                    this._currentSong.Start();
+                };
                 vstack.AddChild(btn);
             }
             _desktop = new Desktop();
             _desktop.Root = vstack;
             
             Textures.InitTextures(this);
-            _drawnPiano = new DrawnPiano(this);
+            OnScreenPiano = new DrawnPiano(this);
         }
 
         protected override void Update(GameTime gameTime)
@@ -82,6 +88,7 @@ namespace synthy_cs
                 Exit();
 
             // TODO: Add your update logic here
+            _currentSong?.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -91,11 +98,12 @@ namespace synthy_cs
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            _desktop.Render();
             _spriteBatch.Begin();
-            //_spriteBatch.Draw(_drawnPiano.BasePiano, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, SpriteEffects.None, 0f);
-            _drawnPiano.Draw(this, _spriteBatch);
+            _currentSong?.Draw(this, _spriteBatch);
+            OnScreenPiano.Draw(this, _spriteBatch);
             _spriteBatch.End();
+            
+            _desktop.Render();
 
             base.Draw(gameTime);
         }
