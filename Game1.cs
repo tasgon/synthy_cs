@@ -105,7 +105,6 @@ namespace synthy_cs
             OnScreenPiano.Draw(this, _spriteBatch);
             if (_currentSong != null)
             {
-                Console.WriteLine("relskjd");
                 var pos = new Vector2(GraphicsDevice.Viewport.Width - 100, 0);
                 _spriteBatch.DrawString(_font, $"{(_currentSong.SongJudgement.Accuracy*100):F2}%", pos, Color.White);
             }

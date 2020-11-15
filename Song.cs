@@ -56,6 +56,7 @@ namespace synthy_cs
             {
                 var note = OnScreenNotes.Dequeue();
             }
+            SongJudgement.Update();
         }
 
         public void Draw(Game1 game, SpriteBatch sb)
@@ -68,7 +69,6 @@ namespace synthy_cs
                 var tex = game.OnScreenPiano.KeyPositions[idx].Item1;
                 var rect = new Rectangle((int) (game.OnScreenPiano.KeyPositions[idx].Item2.X * scaleX),
                     note.VerticalPos(this, game), (int) (tex.Width * scaleX), note.Height(this, game));
-                Console.WriteLine(rect);
                 sb.Draw(tex, rect, Color.White);
             }
         }

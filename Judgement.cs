@@ -49,17 +49,17 @@ namespace synthy_cs
             }
 
             var ev = queue.Peek();
-            if (ev.Item1 == e.EventType)
+            var window = Math.Abs(ev.Item2 - _song.CurrentTime);
+            Console.WriteLine(window);
+            if (window < Settings.HitPerfectMicros) HitPerfect++;
+            else if (window < Settings.HitOkayMicros) HitOkay++;
+            else if (window < Settings.HitBadMicros) HitBad++;
+            else if (ev.Item1 == MidiEventType.NoteOn)
             {
-                var window = Math.Abs(ev.Item2 - _song.CurrentTime);
-                if (window < Settings.HitPerfectMicros) HitPerfect++;
-                else if (window < Settings.HitOkayMicros) HitOkay++;
-                else if (window < Settings.HitBadMicros) HitBad++;
-                else if (e.EventType == MidiEventType.NoteOn)
-                {
-                    HitMiss++;
-                }
+                HitMiss++;
             }
+
+            Console.WriteLine($"PF: {HitPerfect}; OK: {HitOkay}; BD: {HitBad}; MS: {HitMiss}");
         }
 
         public void Update()
