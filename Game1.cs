@@ -16,6 +16,7 @@ namespace synthy_cs
         private Desktop _desktop;
         public DrawnPiano OnScreenPiano;
         private Song _currentSong = null;
+        private bool ShowMenu = true;
 
         public Game1()
         {
@@ -67,6 +68,7 @@ namespace synthy_cs
                 Text = "Songs:"
             });
             var hstack = new HorizontalStackPanel();
+            hstack.AddChild(new Label {Id = "sldjk", Text="Time Window: "});
             var timeWindowLabel = new Label {Id = "twL", Text = $"{Settings.TimeWindowMillis} ms"};
             var plusBtn = new TextButton {Text = " + "};
             plusBtn.Click += (sender, args) =>
@@ -106,8 +108,9 @@ namespace synthy_cs
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+                Keyboard.GetState().IsKeyDown(Keys.Escape))
+                ShowMenu = !ShowMenu;
 
             // TODO: Add your update logic here
             _currentSong?.Update(gameTime);
@@ -139,7 +142,7 @@ namespace synthy_cs
             }
             _spriteBatch.End();
             
-            _desktop.Render();
+            if (ShowMenu) _desktop.Render();
 
             base.Draw(gameTime);
         }
